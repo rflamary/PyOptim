@@ -34,18 +34,25 @@ wls=np.linalg.solve(X.T.dot(X),X.T.dot(y))
 print("Err LS={}".format(optim.utils.norm(wt-wls)))
 
 # optimization parameters
+
+
 params=dict()
 params['nbitermax']=1000
 params['stopvarj']=1e-9
 params['verbose']=False
 params['log']=True
 
-# loss functions and regularization term
+
+# Problem:
+#   min_w |y-Xw|^2
+#   s.t. |w|_1<=1
+#
+
 f=lambda w:optim.loss.loss_l2(w,X,y) # l2 loss
 df=lambda w:optim.loss.grad_l2(w,X,y) # grad l2 loss
 
 
-def solve_C(xk,g):
+def solve_C(xk,g): # solve the linearization
     v=np.zeros_like(xk)
     ag=np.abs(g)
     idx=np.argmax(ag)

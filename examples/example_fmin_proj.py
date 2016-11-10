@@ -42,6 +42,11 @@ params['verbose']=True
 params['bbrule']=False
 params['log']=True
 
+# Problem:
+#   min_w |y-Xw|^2
+#   s.t. |w|_1=1 and w>=0 (simplex)
+#
+
 # loss functions and regularization term
 f=lambda w:optim.loss.loss_l2(w,X,y) # l2 loss
 df=lambda w:optim.loss.grad_l2(w,X,y) # grad l2 loss

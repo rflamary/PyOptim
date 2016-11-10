@@ -45,6 +45,9 @@ params['bbrule']=True
 params['log']=True
 
 # loss functions and regularization term
+# Problem:
+#   min_w |y-Xw|^2+reg*|w|_1
+
 f=lambda w:optim.loss.loss_l2(w,X,y) # l2 loss
 df=lambda w:optim.loss.grad_l2(w,X,y) # grad l2 loss
 g=optim.prox.reg_l1
