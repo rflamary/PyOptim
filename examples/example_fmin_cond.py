@@ -60,5 +60,5 @@ def solve_C(xk,g): # solve the linearization
     return v
 
 
-w,log=optim.solvers.fmin_conj(f,df,solve_C,w0,**params)
+w,log=optim.solvers.fmin_cond(f,df,solve_C,w0,**params)
 print("Err Simplex={}".format(optim.utils.norm(wt-w)))
