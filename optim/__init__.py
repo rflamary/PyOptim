@@ -9,6 +9,8 @@ from . import proj
 
 __version__="0.1.0"
 
+from .solvers import fmin_prox,fmin_proj
+
 
 __all__ = ["utils","solvers","loss","prox",'proj']
 

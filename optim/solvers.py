@@ -125,7 +125,7 @@ def fmin_prox(f,df,g,prox_g,x0,lambd=1.,backtrack=True,nbitermax=1000,stopvarx=1
 
 
 
-def fmin_proj(f,df,proj,x0,nbitermax=1000,stopvarx=1e-9,stopvarj=1e-9,t0=1.,verbose=False,bbrule=True,**kwargs):
+def fmin_proj(f,df,proj,x0,nbitermax=1000,stopvarx=1e-9,stopvarj=1e-9,t0=1.,verbose=False,bbrule=True,log=False,**kwargs):
     """
     Solve the optimization problem:
 
@@ -165,7 +165,9 @@ def fmin_proj(f,df,proj,x0,nbitermax=1000,stopvarx=1e-9,stopvarj=1e-9,t0=1.,verb
     grad=df(x,**kwargs)
     deltax.append(np.linalg.norm(x-proj(x-grad,**kwargs),np.inf)/np.linalg.norm(x,np.inf))
 
-    log=dict()
+    if log:
+        log=dict()
+        log['loss']=loss
     t=t0;
 
     if verbose:
@@ -232,8 +234,9 @@ def fmin_proj(f,df,proj,x0,nbitermax=1000,stopvarx=1e-9,stopvarj=1e-9,t0=1.,verb
         it+=1
 
 
-
-    log['loss']=loss
-    log['deltax']=deltax
-
-    return x,log
+    if log:
+        log['loss']=loss
+        log['deltax']=deltax
+        return x,log
+    else:
+        return x
