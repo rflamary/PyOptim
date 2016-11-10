@@ -29,6 +29,11 @@ sig=1.
 X=np.random.randn(n,d)
 y=np.dot(X,wt)+sig*np.random.randn(n)
 
+
+# least square
+wls=np.linalg.solve(X.T.dot(X),X.T.dot(y))
+print("Err LS={}".format(optim.utils.norm(wt-wls)))
+
 # optimization parameters
 params=dict()
 params['nbitermax']=1000
@@ -45,7 +50,7 @@ df=lambda w:optim.loss.grad_l2(w,X,y) # grad l2 loss
 g=optim.prox.reg_l1
 prox_g=optim.prox.prox_l1
 
-reg=1e-1
+reg=1e-2
 
 w,log=optim.solvers.fmin_prox(f,df,g,prox_g,w0,lambd=reg,**params)
-
+print("Err LASSO={}".format(optim.utils.norm(wt-w)))
