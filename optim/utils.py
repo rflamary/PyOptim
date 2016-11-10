@@ -1,6 +1,7 @@
 
 
 import numpy as np
+from scipy.optimize.linesearch import scalar_search_armijo
 
 def norm(x):
     """l2 norm of vector (Frobenius for matrices)"""

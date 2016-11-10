@@ -36,16 +36,22 @@ print("Err LS={}".format(optim.utils.norm(wt-wls)))
 # optimization parameters
 params=dict()
 params['nbitermax']=1000
-params['stopvarx']=1e-9
 params['stopvarj']=1e-9
-params['verbose']=True
-params['bbrule']=False
+params['verbose']=False
 params['log']=True
 
 # loss functions and regularization term
 f=lambda w:optim.loss.loss_l2(w,X,y) # l2 loss
 df=lambda w:optim.loss.grad_l2(w,X,y) # grad l2 loss
-proj=lambda w: optim.proj.proj_simplex(w,1)
 
-w,log=optim.solvers.fmin_proj(f,df,proj,w0,**params)
+
+def solve_C(xk,g):
+    v=np.zeros_like(xk)
+    ag=np.abs(g)
+    idx=np.argmax(ag)
+    v[idx]=-np.sign(g[idx])/idx.size
+    return v
+
+
+w,log=optim.solvers.fmin_conj(f,df,solve_C,w0,**params)
 print("Err Simplex={}".format(optim.utils.norm(wt-w)))
