@@ -1,6 +1,6 @@
 import numpy as np
 
-from .utils import armijo,min_interp_2,norm
+from .utils import armijo,min_interp_2,norm,line_search_armijo
 
 
 # format string for printing in verbose mode
@@ -237,6 +237,112 @@ def fmin_proj(f,df,proj,x0,nbitermax=1000,stopvarx=1e-9,stopvarj=1e-9,t0=1.,verb
     if log:
         log['loss']=loss
         log['deltax']=deltax
+        return x,log
+    else:
+        return x
+
+
+
+def fmin_conj(f,df,solve_c,x0,nbitermax = 200,stopvarj=1e-9,verbose=False,log=False):
+    """ F minimization with conjugate gradient
+
+        The function solves the following optimization problem:
+
+    .. math::
+        \min_x f(x)
+
+        s.t. x\inc
+
+
+    where :
+
+
+
+    Parameters
+    ----------
+
+    x0 :  np.ndarray (ns,nt), optional
+        initial guess (default is indep joint density)
+    nbitermax : int, optional
+        Max number of iterations
+    stopThr : float, optional
+        Stop threshol on error (>0)
+    verbose : bool, optional
+        Print information along iterations
+    log : bool, optional
+        record log if True
+
+    Returns
+    -------
+    x : ndarray
+        solution
+    log : dict
+        log dictionary return only if log==True in parameters
+
+
+    References
+    ----------
+
+
+
+    """
+
+    loop=1
+
+    if log:
+        log={'loss':[]}
+
+
+
+    x=x0
+    f_val=f(x0)
+    if log:
+        log['loss'].append(f_val)
+
+    it=0
+
+    if verbose:
+        print('{:5s}|{:12s}|{:8s}'.format('It.','Loss','Delta loss')+'\n'+'-'*32)
+        print('{:5d}|{:8e}|{:8e}'.format(it,f_val,0))
+
+    while loop:
+
+        it+=1
+        old_fval=f_val
+
+
+        # problem linearization
+        g=df(x)
+
+        # solve linearization
+        xc=solve_c(x,g)
+
+        deltax=xc-x
+
+        # line search
+        alpha,fc,f_val = line_search_armijo(f,x,deltax,g,f_val)
+
+        x=x+alpha*deltax
+
+        # test convergence
+        if it>=nbitermax:
+            loop=0
+
+        delta_fval=(f_val-old_fval)/abs(f_val)
+        if abs(delta_fval)<stopvarj:
+            loop=0
+
+
+        if log:
+            log['loss'].append(f_val)
+
+        if verbose:
+            if it%20 ==0:
+                print('{:5s}|{:12s}|{:8s}'.format('It.','Loss','Delta loss')+'\n'+'-'*32)
+            print('{:5d}|{:8e}|{:8e}'.format(it,f_val,delta_fval))
+
+
+    if log:
         return x,log
     else:
         return x
