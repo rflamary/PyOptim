@@ -51,8 +51,8 @@ def fmin_prox(f,df,g,prox_g,x0,lambd=1.,backtrack=True,nbitermax=1000,stopvarx=1
     t=t0;
 
     if verbose:
-        print prnt_str_name.format(it="It. ",loss='Loss ',dloss="Delta Loss ",step="Step ")
-        print prnt_str_loop.format(it=0,loss=loss[-1],dloss=0,step=1/t)
+        print((prnt_str_name.format(it="It. ",loss='Loss ',dloss="Delta Loss ",step="Step ")))
+        print((prnt_str_loop.format(it=0,loss=loss[-1],dloss=0,step=1/t)))
 
 
     loop=True
@@ -81,14 +81,14 @@ def fmin_prox(f,df,g,prox_g,x0,lambd=1.,backtrack=True,nbitermax=1000,stopvarx=1
             #print '\t',loss[-1],thr_back
             it2+=1
         if it2==nbitermax_back:
-            print "Warning: backtrack failed"
+            print("Warning: backtrack failed")
         #print loss[-1],t
 
         # print information
         if verbose:
             if not (it)% 20:
-                print prnt_str_name.format(it="It. ",loss='Loss ',dloss="Delta Loss ",step="Step ")
-            print prnt_str_loop.format(it=it,loss=loss[-1],dloss=(loss[-1]-loss[-2])/abs(loss[-2]),step=1/t)
+                print((prnt_str_name.format(it="It. ",loss='Loss ',dloss="Delta Loss ",step="Step ")))
+            print(prnt_str_loop.format(it=it,loss=loss[-1],dloss=(loss[-1]-loss[-2])/abs(loss[-2]),step=1/t))
 
         # BB rule
         xbb=x-x_1
@@ -101,15 +101,15 @@ def fmin_prox(f,df,g,prox_g,x0,lambd=1.,backtrack=True,nbitermax=1000,stopvarx=1
         # test convergence
         if norm(x-x_1)/norm(x)<stopvarx:
             loop=False
-            if verbose: print "delta x convergence"
+            if verbose: print("delta x convergence")
 #
         if abs(loss[-1]-loss[-2])/abs(loss[-2])<stopvarj:
             loop=False
-            if verbose: print "delta loss convergence"
+            if verbose: print("delta loss convergence")
 
         if it>=nbitermax:
             loop=False
-            if verbose: print "Max number of iteration reached"
+            if verbose: print("Max number of iteration reached")
 
 
         # increment iteration
@@ -171,8 +171,8 @@ def fmin_proj(f,df,proj,x0,nbitermax=1000,stopvarx=1e-9,stopvarj=1e-9,t0=1.,verb
     t=t0;
 
     if verbose:
-        print prnt_str_name.format(it="It. ",loss='Loss ',dloss="Delta Loss ",step="Step ")
-        print prnt_str_loop.format(it=0,loss=loss[-1],dloss=0,step=1/t)
+        print(prnt_str_name.format(it="It. ",loss='Loss ',dloss="Delta Loss ",step="Step "))
+        print(prnt_str_loop.format(it=0,loss=loss[-1],dloss=0,step=1/t))
 
     def fproj(x):
         return f(proj(x,**kwargs),**kwargs)
@@ -204,8 +204,8 @@ def fmin_proj(f,df,proj,x0,nbitermax=1000,stopvarx=1e-9,stopvarj=1e-9,t0=1.,verb
         # print information
         if verbose:
             if not (it)% 20:
-                print prnt_str_name.format(it="It. ",loss='Loss ',dloss="Delta Loss ",step="Step ")
-            print prnt_str_loop.format(it=it,loss=loss[-1],dloss=(loss[-1]-loss[-2])/abs(loss[-2]),step=tau/t)
+                print(prnt_str_name.format(it="It. ",loss='Loss ',dloss="Delta Loss ",step="Step "))
+            print(prnt_str_loop.format(it=it,loss=loss[-1],dloss=(loss[-1]-loss[-2])/abs(loss[-2]),step=tau/t))
 
         # BB rule
         xbb=x-x_1
@@ -219,15 +219,15 @@ def fmin_proj(f,df,proj,x0,nbitermax=1000,stopvarx=1e-9,stopvarj=1e-9,t0=1.,verb
         deltax.append(np.linalg.norm(x-proj(x-grad,**kwargs),np.inf)/np.linalg.norm(x,np.inf))
         if deltax[-1]<stopvarx:
             loop=False
-            if verbose: print "delta x convergence"
+            if verbose: print("delta x convergence")
 #
         if abs(loss[-1]-loss[-2])/abs(loss[-2])<stopvarj:
             loop=False
-            if verbose: print "delta loss convergence"
+            if verbose: print("delta loss convergence")
 
         if it>=nbitermax:
             loop=False
-            if verbose: print "Max number of iteration reached"
+            if verbose: print("Max number of iteration reached")
 
 
         # increment iteration
@@ -302,8 +302,8 @@ def fmin_cond(f,df,solve_c,x0,nbitermax = 200,stopvarj=1e-9,verbose=False,log=Fa
     it=0
 
     if verbose:
-        print('{:5s}|{:12s}|{:8s}'.format('It.','Loss','Delta loss')+'\n'+'-'*32)
-        print('{:5d}|{:8e}|{:8e}'.format(it,f_val,0))
+        print(('{:5s}|{:12s}|{:8s}'.format('It.','Loss','Delta loss')+'\n'+'-'*32))
+        print(('{:5d}|{:8e}|{:8e}'.format(it,f_val,0)))
 
     while loop:
 
@@ -338,8 +338,8 @@ def fmin_cond(f,df,solve_c,x0,nbitermax = 200,stopvarj=1e-9,verbose=False,log=Fa
 
         if verbose:
             if it%20 ==0:
-                print('{:5s}|{:12s}|{:8s}'.format('It.','Loss','Delta loss')+'\n'+'-'*32)
-            print('{:5d}|{:8e}|{:8e}'.format(it,f_val,delta_fval))
+                print(('{:5s}|{:12s}|{:8s}'.format('It.','Loss','Delta loss')+'\n'+'-'*32))
+            print(('{:5d}|{:8e}|{:8e}'.format(it,f_val,delta_fval)))
 
 
     if log:
