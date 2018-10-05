@@ -10,12 +10,13 @@ from . import solvers
 from . import loss
 from . import prox
 from . import proj
+from . import stdsolvers
 
 __version__="0.1.0"
 
 from .solvers import fmin_prox,fmin_proj,fmin_cond
 
 
-__all__ = ["utils","solvers","loss","prox",'proj',
+__all__ = ["utils","solvers",'stdsolvers',"loss","prox",'proj',
            "fmin_prox","fmin_proj","fmin_cond"]
 
