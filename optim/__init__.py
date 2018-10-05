@@ -1,5 +1,9 @@
 """ PyOptim Python numerical optimization toolbox"""
 
+# Author: Remi Flamary <remi.flamary@unice.fr>
+#
+# License: MIT License
+
 
 from . import utils
 from . import solvers

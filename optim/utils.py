@@ -1,11 +1,15 @@
+""" Projection operator module """
 
+# Author: Remi Flamary <remi.flamary@unice.fr>
+#
+# License: MIT License
 
 import numpy as np
 from scipy.optimize.linesearch import scalar_search_armijo
 
 def norm(x):
     """l2 norm of vector (Frobenius for matrices)"""
-    return np.sqrt(np.sum(x**2))
+    return np.sqrt(np.sum(np.square(x)))
 
 
 def min_interp_2(f0,fp0,x0,f1,x1):
@@ -60,7 +64,7 @@ def armijo(x0,dx,f,f0,df0,tau=1,gamma=1e-4,nitermax=100,**kwargs):
     return x,tau,f_new
 
 # The corresponding scipy function does not work for matrices
-def line_search_armijo(f,xk,pk,gfk,old_fval,args=(),c1=1e-4,alpha0=0.99):
+def line_search_armijo(f,xk,pk,gfk,old_fval=None,args=(),c1=1e-4,alpha0=0.99):
     """
     Armijo linesearch function that works with matrices
 

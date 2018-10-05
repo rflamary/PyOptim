@@ -1,3 +1,9 @@
+""" Projection operator module """
+
+# Author: Remi Flamary <remi.flamary@unice.fr>
+#
+# License: MIT License
+
 import numpy as np
 
 def proj_pos(x,lambd=1,**kwargs):
