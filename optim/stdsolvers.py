@@ -267,7 +267,7 @@ def lp_solve_gurobipy(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
 
 
 def lp_solve_cvxopt(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
-             verbose=False, log=False, method=None, **kwargs):
+             verbose=False, log=False, method='default', **kwargs):
     
     n=c.shape[0]
     
@@ -293,6 +293,8 @@ def lp_solve_cvxopt(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
     Aeq=mat(Aeq) if Aeq is not None else None
     beq=mat(beq) if beq is not None else None
     
+    if method=='default':
+        method=None
     
         
     # add equality as two inequality (stdgrb do not handle that well yet)
