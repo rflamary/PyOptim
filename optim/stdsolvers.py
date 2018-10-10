@@ -106,7 +106,13 @@ def lp_solve(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None, solver='scipy',
              verbose=verbose,log=log, **kwargs)
     elif solver=='stdgrb':
         res=lp_solve_stdgrb(c,A,b,Aeq,beq,lb,ub,
-             verbose=verbose,log=log, **kwargs)        
+             verbose=verbose,log=log, **kwargs)    
+    elif solver=='gurobipy':
+        res=lp_solve_gurobipy(c,A,b,Aeq,beq,lb,ub,
+             verbose=verbose,log=log, **kwargs)          
+    elif solver=='cvxopt':
+        res=lp_solve_cvxopt(c,A,b,Aeq,beq,lb,ub,
+             verbose=verbose,log=log, **kwargs)           
     else:
         raise NotImplemented('Solver {} not implemented'.format(solver))
     
@@ -163,6 +169,10 @@ def lp_solve_scipy(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
 def lp_solve_stdgrb(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
              verbose=False, log=False, method='default', crossover=-1, **kwargs):
     
+    
+    if not stdgrb:
+        raise ImportError("stdgrb not installed")
+    
     n=c.shape[0]
     
     c, A, b, Aeq, beq, lb, ub = lp_init_mat(c,A,b,Aeq,beq,lb,ub)
@@ -178,10 +188,6 @@ def lp_solve_stdgrb(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
     if method in method_to_int:
         method=method_to_int[method]
 
-    
-    if 'disp' in kwargs:
-        verbose= kwargs['disp'] or verbose
-        del kwargs['disp']
         
     # add equality as two inequality (stdgrb do not handle that well yet)
     A2=np.concatenate((A,Aeq,-Aeq),0)
@@ -196,6 +202,119 @@ def lp_solve_stdgrb(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
         return sol, val, res
     else:
         return sol, val
+
+def lp_solve_gurobipy(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
+             verbose=False, log=False, method='default', crossover=-1, **kwargs):
+    
+    if not gurobipy:
+        raise ImportError("gurobipy not installed")
+
+    n=c.shape[0]
+    
+    
+    method_to_int={'default':-1,
+                   'primal-simplex':0,
+                   'dual-simplex': 1,
+                   'barrier': 2,
+                   'concurrent': 3,
+                   'deterministic-concurrent': 4,
+                   'deterministic-concurrent-simplex': 5}
+    
+    if method in method_to_int:
+        method=method_to_int[method]
+        
+        
+    m = gurobipy.Model("LP")
+    x = m.addVars(n, lb=lb, ub=ub, name="x")
+    
+    m.setObjective(gurobipy.quicksum((c[i]*x[i] 
+                    for i in range(n))), gurobipy.GRB.MINIMIZE)
+    
+    if A is not None and b is not None:
+        m.addConstrs((gurobipy.quicksum((x[j]*A[i,j] 
+                        for j in range(n) if A[i,j])) <=  b[i] 
+                        for i in range(A.shape[0])), "Ax<=b")
+
+    if Aeq is not None and beq is not None:
+        m.addConstrs((gurobipy.quicksum((x[j]*Aeq[i,j] 
+                        for j in range(n) if Aeq[i,j])) ==  beq[i] 
+                        for i in range(Aeq.shape[0])), "Aeq x=beq")
+    # add equality as two inequality (stdgrb do not handle that well yet)
+    
+    #m.update()
+    try:
+        m.Params.Method       = method
+        m.Params.LogToConsole = verbose
+        m.Params.Crossover    = crossover
+    
+        m.optimize()
+        
+        sol=np.zeros_like(c)
+        for i in range(n):
+            sol[i]=m.getVars()[i].x
+        val=m.getObjective().getValue()
+        res= {'x':sol,'fun':val,'success': val is not None}
+            
+    except gb.GurobiError as e:
+        print('Error code ' + str(e.errno) + ": " + str(e))
+        
+    if log:
+        return sol, val, res
+    else:
+        return sol, val
+
+
+
+
+def lp_solve_cvxopt(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
+             verbose=False, log=False, method=None, **kwargs):
+    
+    n=c.shape[0]
+    
+    c, A, b, Aeq2, beq2, lb2, ub2 = lp_init_mat(c,A,b,Aeq,beq,lb,ub)
+    
+    mat= cvxopt.matrix
+    
+    A2=A
+    b2=b
+    
+    # add constraints into A matrix
+    if ub is not None:
+        A2=np.concatenate((A2,np.eye(n)),0)
+        b2=np.concatenate((b2,ub2))
+    if lb is not None:
+        A2=np.concatenate((A2,-np.eye(n)),0)
+        b2=np.concatenate((b2,-lb2))        
+    
+    c=mat(c)
+    A2=mat(A2)
+    b2=mat(b2)
+    
+    Aeq=mat(Aeq) if Aeq is not None else None
+    beq=mat(beq) if beq is not None else None
+    
+    
+        
+    # add equality as two inequality (stdgrb do not handle that well yet)
+    if Aeq is not None and beq is not None:
+        A2=np.concatenate((A,Aeq,-Aeq),0)
+        b2=np.concatenate((b,beq,-beq))
+    
+    
+    cvxopt.solvers.options['show_progress'] = verbose
+            
+    res = cvxopt.solvers.lp(c,A2,b2,Aeq,beq,solver=method,**kwargs)
+    
+    #res={'x':sol,'fun':val,'success': val is not None}
+    #print(res)
+    
+    for key in ['x','y','s','z']:
+        res[key]=np.array(res[key]).ravel()
+
+    if log:
+        return res['x'], res['primal objective'], res
+    else:
+        return res['x'], res['primal objective']
 
     
 
