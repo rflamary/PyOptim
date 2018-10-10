@@ -28,14 +28,20 @@ def lp_init_mat(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None):
         b=np.zeros(0)
         
     if Aeq is None or beq is None:
-        A=np.zeros((0,n))
-        b=np.zeros(0)
+        Aeq=np.zeros((0,n))
+        beq=np.zeros(0)
         
     if lb is None:
         lb=-np.ones(n)*np.inf
 
     if ub is None:
         ub=np.ones(n)*np.inf
+        
+    if isinstance(lb, (int, float, complex)):
+        lb=np.ones(n)*lb
+        
+    if isinstance(ub, (int, float, complex)):
+        ub=np.ones(n)*ub
     
     return c, A, b, Aeq, beq, lb, ub
 
@@ -98,6 +104,9 @@ def lp_solve(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None, solver='scipy',
     if solver=='scipy':
         res=lp_solve_scipy(c,A,b,Aeq,beq,lb,ub,
              verbose=verbose,log=log, **kwargs)
+    elif solver=='stdgrb':
+        res=lp_solve_stdgrb(c,A,b,Aeq,beq,lb,ub,
+             verbose=verbose,log=log, **kwargs)        
     else:
         raise NotImplemented('Solver {} not implemented'.format(solver))
     
@@ -109,7 +118,7 @@ def lp_solve(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None, solver='scipy',
     return res
         
 
-def lp_solve_scipy(c,A,b,Aeq,beq,lb=None,ub=None,
+def lp_solve_scipy(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
              verbose=False, log=False, method='interior-point', **kwargs):
     
     n=c.shape[0]
@@ -124,7 +133,6 @@ def lp_solve_scipy(c,A,b,Aeq,beq,lb=None,ub=None,
     if isinstance(lb, (int, float, complex)) and isinstance(lb, (int, float, complex)):
         bounds=(lb,ub)
     else:
-        
         
         if isinstance(lb, (int, float, complex)):
             lb=np.ones(n)*lb
@@ -151,11 +159,45 @@ def lp_solve_scipy(c,A,b,Aeq,beq,lb=None,ub=None,
     else:
         return res.x, val
     
-    
-    
-    
 
+def lp_solve_stdgrb(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
+             verbose=False, log=False, method='default', crossover=-1, **kwargs):
+    
+    n=c.shape[0]
+    
+    c, A, b, Aeq, beq, lb, ub = lp_init_mat(c,A,b,Aeq,beq,lb,ub)
+    
+    method_to_int={'default':-1,
+                   'primal-simplex':0,
+                   'dual-simplex': 1,
+                   'barrier': 2,
+                   'concurrent': 3,
+                   'deterministic-concurrent': 4,
+                   'deterministic-concurrent-simplex': 5}
+    
+    if method in method_to_int:
+        method=method_to_int[method]
 
+    
+    if 'disp' in kwargs:
+        verbose= kwargs['disp'] or verbose
+        del kwargs['disp']
+        
+    # add equality as two inequality (stdgrb do not handle that well yet)
+    A2=np.concatenate((A,Aeq,-Aeq),0)
+    b2=np.concatenate((b,beq,-beq))
+            
+    sol, val = stdgrb.lp_solve(c,A2,b2,lb=lb,ub=ub,method=method,
+                               logtoconsole=verbose,crossover=crossover)
+    
+    res={'x':sol,'fun':val,'success': val is not None}
+
+    if log:
+        return sol, val, res
+    else:
+        return sol, val
+
+    
 
 def qp_solve(Q,c=None,A=None,b=None,lb=None,ub=None, method=-1,logtoconsole=1,crossover=-1):
     """ Solves a standard quadratic program
