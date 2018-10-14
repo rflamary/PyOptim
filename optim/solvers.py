@@ -401,25 +401,35 @@ def fmin_proj(f, df, proj, x0, nbitermax=1000, stopvarx=1e-9, stopvarj=1e-9,
 
 def fmin_cond(f, df, solve_c, x0, nbitermax=200,
               stopvarj=1e-9, verbose=False, log=False):
-    r""" F minimization with conditional gradient
+    r""" Solve constrained optimization with conditional gradient
 
         The function solves the following optimization problem:
 
     .. math::
-        \min_x f(x)
+        \min_x \quad f(x)
 
-        s.t. x\inc
-
+        \text{s.t.} \quad x\in P
 
     where :
 
+    - f is differentiable (df) and Lipshictz gradient
+    - solve_c is the solver for the linearized problem of the form
+        .. math::
+            \min_x \quad x^T v
+
+            \text{s.t.} \quad x\in P
 
 
     Parameters
     ----------
-
-    x0 :  np.ndarray (ns,nt), optional
-        initial guess (default is indep joint density)
+    f : function
+        Smooth function f: R^d -> R
+    df : function
+        Gradient of f, df:R^d -> R^d
+    solve_c : function
+        Solver for linearized problem, solve_c:R^d -> R^d
+    x_0 : (d,) numpy.array
+        Initial point
     nbitermax : int, optional
         Max number of iterations
     stopThr : float, optional
@@ -433,6 +443,8 @@ def fmin_cond(f, df, solve_c, x0, nbitermax=200,
     -------
     x : ndarray
         solution
+    val : float
+        Optimal value at solution
     log : dict
         log dictionary return only if log==True in parameters
 
@@ -494,6 +506,6 @@ def fmin_cond(f, df, solve_c, x0, nbitermax=200,
             print(('{:5d}|{:8e}|{:8e}'.format(it, f_val, delta_fval)))
 
     if log:
-        return x, log
+        return x, f_val, log
     else:
-        return x
+        return x, f_val

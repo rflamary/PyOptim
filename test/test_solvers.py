@@ -135,7 +135,7 @@ def test_fmincond():
         v[idx] = -np.sign(g[idx]) / idx.size
         return v
 
-    w, log = optim.solvers.fmin_cond(f, df, solve_C, w0, **params)
+    w, val, log = optim.solvers.fmin_cond(f, df, solve_C, w0, **params)
     print("Err Simplex={}".format(optim.utils.norm(wt - w)))
 
     assert np.abs(w.sum()) <= 1
