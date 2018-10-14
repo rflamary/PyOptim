@@ -20,6 +20,7 @@ except ImportError:
     
 
 def lp_init_mat(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None):
+    """ initialize all matrices for lp problem with correct size"""
     
     n=c.shape[0]
     
@@ -48,7 +49,7 @@ def lp_init_mat(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None):
 
 def lp_solve(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None, solver='scipy',
              verbose=False, log=False, **kwargs):
-    """ Solve the standard linear program
+    """ Solve a standard linear program with linear constraints
     
     Solve the following optimization problem:
         
@@ -60,33 +61,50 @@ def lp_solve(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None, solver='scipy',
         
         Ax <= b
         
-        Aeq x = beq
+        A_{eq} x = b_{eq}
+        
+    Return val as None if optmization failed.
         
     All constraint parameters are optional, they will be ignore is left at 
-    default value None
-        
+    default value None.
     
-    Use the solver slected from : 
+        
+    Use the solver selected from (default 'scipy'): 
+        - 'scipy'
+            scipy.optimize solver with interior point solver and 
+            available methods 'interior-point' or 'simplex'
+        - 'cvxopt'
+            cvxopt interior point solver ('default') with other
+            available methods 'mosek' or 'glpk'     
+        - 'gurobipy'
+            gurobi solver with official python interface
+        - 'stdgurobi'
+            gurobi solver with c interface more efficient for dense problems
     
     
     Parameters
     ----------
     c : (d,) ndarray, float64
-        Linear cost vector
+        Linear cost vector.
     A : (n,d) ndarray, float64, optional
-        Linear constraint matrix 
+        Linear inequality constraint matrix.
     b : (n,) ndarray, float64, optional
-        Linear constraint vector
+        Linear inequality constraint vector.
     Aeq : (n,d) ndarray, float64, optional
-        Linear equality constraint matrix 
+        Linear equality constraint matrix .
     beq : (n,) ndarray, float64, optional
-        Linear equality constraint vector        
+        Linear equality constraint vector.   .     
     lb : (d) ndarray, float64, optional
-        Lower bound constraint        
+        Lower bound constraint, -np.inf if not provided.    
     ub : (d) ndarray, float64, optional
-        Upper bound constraint      
+        Upper bound constraint, np.inf if not provided.
     solver : string, optional
-        solver used to solve the linear program
+        Select solver used to solve the linear program from 'scipy', 'cvxopt'
+        'gurobipy', 'stdgrb'.
+    verbose : boolean, optional
+        Print optimization informations.
+    log : boolean, optional
+        Return a dictionary with optim informations in adition to x and val
         
     Returns
     -------
@@ -114,12 +132,7 @@ def lp_solve(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None, solver='scipy',
         res=lp_solve_cvxopt(c,A,b,Aeq,beq,lb,ub,
              verbose=verbose,log=log, **kwargs)           
     else:
-        raise NotImplemented('Solver {} not implemented'.format(solver))
-    
-        
-#    if not A.flags.c_contiguous:
-#        A=A.copy(order='C')
-        
+        raise NotImplementedError('Solver {} not implemented'.format(solver))   
     
     return res
         
@@ -149,17 +162,18 @@ def lp_solve_scipy(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
             
         bounds = [(ub[i],lb[i]) for i in range(n)]
             
-    
+    # catch is disp was given to true (scipy interfface compativility)
     if 'disp' in kwargs:
         verbose= kwargs['disp'] or verbose
         del kwargs['disp']
             
     res=scipy.optimize.linprog(c,A,b,Aeq,beq,method=method,bounds=bounds,options={'disp':verbose,**kwargs})
     
+    # check if sucessful 
     val= res.fun
     if not res.success:
         val= None
-
+        
     if log:
         return res.x, val, res
     else:
@@ -172,8 +186,6 @@ def lp_solve_stdgrb(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
     
     if not stdgrb:
         raise ImportError("stdgrb not installed")
-    
-    n=c.shape[0]
     
     c, A, b, Aeq, beq, lb, ub = lp_init_mat(c,A,b,Aeq,beq,lb,ub)
     
@@ -191,7 +203,8 @@ def lp_solve_stdgrb(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
         
     # add equality as two inequality (stdgrb do not handle that well yet)
     A2=np.concatenate((A,Aeq,-Aeq),0)
-    b2=np.concatenate((b,beq,-beq))
+    b2=np.concatenate((b,beq,-beq))  
+    
             
     sol, val = stdgrb.lp_solve(c,A2,b2,lb=lb,ub=ub,method=method,
                                logtoconsole=verbose,crossover=crossover)
@@ -225,6 +238,12 @@ def lp_solve_gurobipy(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
         
         
     m = gurobipy.Model("LP")
+    
+    # set paparemters
+    m.Params.Method       = method
+    m.Params.LogToConsole = verbose
+    m.Params.Crossover    = crossover
+    
     x = m.addVars(n, lb=lb, ub=ub, name="x")
     
     m.setObjective(gurobipy.quicksum((c[i]*x[i] 
@@ -243,10 +262,7 @@ def lp_solve_gurobipy(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
     
     #m.update()
     try:
-        m.Params.Method       = method
-        m.Params.LogToConsole = verbose
-        m.Params.Crossover    = crossover
-    
+
         m.optimize()
         
         sol=np.zeros_like(c)
@@ -255,7 +271,7 @@ def lp_solve_gurobipy(c,A=None,b=None,Aeq=None,beq=None,lb=None,ub=None,
         val=m.getObjective().getValue()
         res= {'x':sol,'fun':val,'success': val is not None}
             
-    except gb.GurobiError as e:
+    except gurobipy.GurobiError as e:
         print('Error code ' + str(e.errno) + ": " + str(e))
         
     if log:
