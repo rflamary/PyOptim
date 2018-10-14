@@ -21,31 +21,31 @@ def fmin_prox(f, df, g, prox_g, x0, lambd=1., backtrack=True, nbitermax=1000,
               sigma=1e-9, eta=2, nbitermax_back=100, bbrule=True, log=False,
               **kwargs):
     r""" Minimize a sum of smooth and nonsmooth function using proximal splitting
-    
+
     The algorithm is the classical Forward Backward Splitting [1]_
     with BB rule for step estimation [2]_.
 
     Solve the optimization problem:
-        
+
     .. math::
 
         min_x \quad  f(x)+\lambda g(x)
 
     where:
-        
+
     - f is differentiable (df) and Lipshictz gradient
     - g is non-differentiable but has a proximal operator (prox_g)
-    
+
     prox_g is a function providing the solution to problem
-    
+
     .. math::
 
         min_x \quad  \frac{1}{2}\|x_0-x\|^2+\lambda*g(x)
-        
+
     Several proximal operators are available at optim.prox
-        
-        
-    Parameters 
+
+
+    Parameters
     ----------
     f : function
         Smooth function f: R^d -> R
@@ -54,7 +54,7 @@ def fmin_prox(f, df, g, prox_g, x0, lambd=1., backtrack=True, nbitermax=1000,
     g : function
         Nonsmooth function g: R^d -> R
     prox_g : function
-        Proximal of g, df:R^d -> R^d   
+        Proximal of g, df:R^d -> R^d
     x_0 : (d,) numpy.array
         Initial point
     lambda : float
@@ -82,7 +82,7 @@ def fmin_prox(f, df, g, prox_g, x0, lambd=1., backtrack=True, nbitermax=1000,
         value multiplying t during backtrack
     nbitermax_back : int, optional
         Max number of backtrack iterations
-            
+
     Returns
     -------
     x: (d,) ndarray
@@ -90,21 +90,22 @@ def fmin_prox(f, df, g, prox_g, x0, lambd=1., backtrack=True, nbitermax=1000,
     val: float
         optimal value of the objective (None if optimization error)
     log: dict
-        Optional log output      
-        
+        Optional log output
+
     References
     ----------
-    .. [1] Combettes, P. L., & Wajs, V. R. (2005). Signal recovery by proximal 
-        forward-backward splitting. Multiscale Modeling & Simulation, 4(4), 1168-1200.
-    
-    .. [2] Barzilai, J., & Borwein, J. M. (1988). Two-point step size 
+    .. [1] Combettes, P. L., & Wajs, V. R. (2005). Signal recovery by proximal
+        forward-backward splitting. Multiscale Modeling & Simulation, 4(4),
+        1168-1200.
+
+    .. [2] Barzilai, J., & Borwein, J. M. (1988). Two-point step size
         gradient methods. IMA journal of numerical analysis, 8(1), 141-148.
-    
+
     See Also
     --------
-    optim.prox : Module containing proximal operators 
+    optim.prox : Module containing proximal operators
     optim.fmin_proj : Projected gradient (special case of proximal gradient)
-    
+
 
     """
     x = x0.copy()
@@ -206,12 +207,12 @@ def fmin_prox(f, df, g, prox_g, x0, lambd=1., backtrack=True, nbitermax=1000,
 def fmin_proj(f, df, proj, x0, nbitermax=1000, stopvarx=1e-9, stopvarj=1e-9,
               t0=1., verbose=False, bbrule=True, log=False, **kwargs):
     r""" Minimize a constrained optimization problem with projected gradient
-    
+
     The algorithm is the classical Spectral Projected Gradient [3]_
     with BB rule for step estimation [4]_.
 
     Solve the optimization problem:
-        
+
     .. math::
 
         min_x \quad f(x)
@@ -219,33 +220,31 @@ def fmin_proj(f, df, proj, x0, nbitermax=1000, stopvarx=1e-9, stopvarj=1e-9,
         \text{s.t. }\quad s\in P
 
     where:
-        
+
     - `f` is differentiable (df) and Lipshictz gradient
     - proj is a projection onto P
-    
+
     `proj` is a projection function providing the solution to problem
-    
+
     .. math::
 
         min_x \quad  \frac{1}{2}\|x_0-x\|^2
-        
+
         \text{s.t. }\quad s\in P
-        
+
     Several projection functions are available at optim.proj
-        
-        
-    Parameters 
+
+
+    Parameters
     ----------
     f : function
         Smooth function f: R^d -> R
     df : function
         Gradient of f, df:R^d -> R^d
     proj : function
-        Projection unto P, proj:R^d -> R^d    
+        Projection unto P, proj:R^d -> R^d
     x_0 : (d,) numpy.array
-        Initial point        
-    backtrack : boolean, optional
-        Perform backtracking if true (default: True).
+        Initial point
     bbrule : boolean, optional
         update step with bb rule.
     nbitermax : int, optional
@@ -259,7 +258,7 @@ def fmin_proj(f, df, proj, x0, nbitermax=1000, stopvarx=1e-9, stopvarj=1e-9,
         initial descent step
     verbose : boolean, optional
         prinrt optimization information
-            
+
     Returns
     -------
     x: (d,) ndarray
@@ -267,22 +266,22 @@ def fmin_proj(f, df, proj, x0, nbitermax=1000, stopvarx=1e-9, stopvarj=1e-9,
     val: float
         optimal value of the objective (None if optimization error)
     log: dict
-        Optional log output      
-        
+        Optional log output
+
     References
     ----------
-    .. [3] Birgin, E. G., Martínez, J. M., & Raydan, M. (2000). Nonmonotone 
-        spectral projected gradient methods on convex sets. SIAM Journal 
+    .. [3] Birgin, E. G., Martínez, J. M., & Raydan, M. (2000). Nonmonotone
+        spectral projected gradient methods on convex sets. SIAM Journal
         on Optimization, 10(4), 1196-1211.
-    
-    .. [4] Barzilai, J., & Borwein, J. M. (1988). Two-point step size 
+
+    .. [4] Barzilai, J., & Borwein, J. M. (1988). Two-point step size
         gradient methods. IMA journal of numerical analysis, 8(1), 141-148.
-    
+
     See Also
     --------
-    optim.proj : Module containing projection operators 
+    optim.proj : Module containing projection operators
     optim.fmin_prox : Proximal splitting (generalization of projected gradient)
-    
+
 
     """
 
@@ -297,16 +296,8 @@ def fmin_proj(f, df, proj, x0, nbitermax=1000, stopvarx=1e-9, stopvarj=1e-9,
     loss.append(f(x, **kwargs))
     grad = df(x, **kwargs)
     deltax.append(
-        np.linalg.norm(
-            x -
-            proj(
-                x -
-                grad,
-                **kwargs),
-            np.inf) /
-        np.linalg.norm(
-            x,
-            np.inf))
+        np.linalg.norm(x - proj(x - grad, **kwargs), np.inf) /
+        np.linalg.norm(x, np.inf))
 
     if log:
         log = dict()

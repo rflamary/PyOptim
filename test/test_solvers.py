@@ -47,7 +47,8 @@ def test_fminprox():
 
     reg = 1e-1
 
-    w, log = optim.solvers.fmin_prox(f, df, g, prox_g, w0, lambd=reg, **params)
+    w, val, log = optim.solvers.fmin_prox(
+        f, df, g, prox_g, w0, lambd=reg, **params)
     print("Err LASSO={}".format(optim.utils.norm(wt - w)))
 
     assert np.sum(np.abs(w) > 0) == 2
@@ -93,7 +94,7 @@ def test_fminproj():
 
     def proj(w): return optim.proj.proj_simplex(w, 1)
 
-    w, log = optim.solvers.fmin_proj(f, df, proj, w0, **params)
+    w, val, log = optim.solvers.fmin_proj(f, df, proj, w0, **params)
     print("Err Simplex={}".format(optim.utils.norm(wt - w)))
 
     np.testing.assert_almost_equal(w.sum(), 1)
