@@ -1,4 +1,4 @@
-""" Proximal operators """
+""" Proximal operators prox_g and corresponding functions g """
 
 # Author: Remi Flamary <remi.flamary@unice.fr>
 #

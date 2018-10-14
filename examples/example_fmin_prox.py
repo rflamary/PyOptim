@@ -57,5 +57,5 @@ prox_g = optim.prox.prox_l1
 
 reg = 1e-2
 
-w, log = optim.solvers.fmin_prox(f, df, g, prox_g, w0, lambd=reg, **params)
+w, val, log = optim.solvers.fmin_prox(f, df, g, prox_g, w0, lambd=reg, **params)
 print("Err LASSO={}".format(optim.utils.norm(wt - w)))

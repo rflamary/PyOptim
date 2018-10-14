@@ -58,5 +58,5 @@ def df(w): return optim.loss.grad_l2(w, X, y)  # grad l2 loss
 def proj(w): return optim.proj.proj_simplex(w, 1)
 
 
-w, log = optim.solvers.fmin_proj(f, df, proj, w0, **params)
+w, val, log = optim.solvers.fmin_proj(f, df, proj, w0, **params)
 print("Err Simplex={}".format(optim.utils.norm(wt - w)))
