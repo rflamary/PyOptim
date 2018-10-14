@@ -1,5 +1,8 @@
 # PyOptim Python numerical optimization toolbox
 
+[![Build Status](https://travis-ci.org/rflamary/PyOptim.svg?branch=master)](https://travis-ci.org/rflamary/PyOptim)
+[![Documentation Status](https://readthedocs.org/projects/pyoptim/badge/?version=latest)](https://pyoptim.readthedocs.io/en/latest/?badge=latest)
+
 This toolob aim at providing a unified interface to generic optimizers 
 for standard (LP,QP) and gradient based optimization problems  (LBFGS, 
 Proximal Splitting, Projected gradient). 
