@@ -13,7 +13,9 @@ import os
 here = path.abspath(path.dirname(__file__))
 
 # dirty but working
-__version__ = '0.1'
+__version__ = re.search(
+    r'__version__\s*=\s*[\'"]([^\'"]*)[\'"]',  # It excludes inline comment too
+    open('optim/__init__.py').read()).group(1)
 # The beautiful part is, I don't even need to check exceptions here.
 # If something messes up, let the build process fail noisy, BEFORE my release!
 
