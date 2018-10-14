@@ -32,7 +32,7 @@ class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name):
         return MagicMock()
-MOCK_MODULES = ['cvxopt','scipy.optimize']
+MOCK_MODULES = ['cvxopt','scipy.optimize','scipy.optimize.linesearch']
 # 'autograd.numpy','pymanopt.manifolds','pymanopt.solvers',
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
