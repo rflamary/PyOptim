@@ -35,7 +35,8 @@ def fmin_prox(f, df, g, prox_g, x0, lambd=1., backtrack=True, nbitermax=1000,
             - backtrack : peform backtrack if true
             - bbrule : update step with bb rule
             - nbitermax : max number of iteratioin in algorithm
-            - stopvarx : stopping criterion for relative variation of the norm of x
+            - stopvarx : stopping criterion for relative variation of the
+                norm of x
             - stopvarj : stopping criterion for relative variation of the cost
             - t0 : initial descent step
             - verbose : prinrt optimization information
@@ -87,7 +88,8 @@ def fmin_prox(f, df, g, prox_g, x0, lambd=1., backtrack=True, nbitermax=1000,
             x = prox_g(x_1 - grad / t, lambd / t, **kwargs)
             loss[-1] = f(x, **kwargs) + g(x, lambd, **kwargs)
             thr_back = np.max([loss[-2 - k] - sigma / 2 * t * norm(x - x_1)
-                               ** 2 for k in range(min(m_back, len(loss) - 1))])
+                               ** 2 for k in range(min(m_back, len(loss) - 1))
+                               ])
             # print '\t',loss[-1],thr_back
             it2 += 1
         if it2 == nbitermax_back:
@@ -98,7 +100,8 @@ def fmin_prox(f, df, g, prox_g, x0, lambd=1., backtrack=True, nbitermax=1000,
         if verbose:
             if not (it) % 20:
                 print((prnt_str_name.format(it="It. ", loss='Loss ',
-                                            dloss="Delta Loss ", step="Step ")))
+                                            dloss="Delta Loss ",
+                                            step="Step ")))
             print(prnt_str_loop.format(it=it,
                                        loss=loss[-1],
                                        dloss=(loss[-1] - loss[-2]
@@ -140,7 +143,7 @@ def fmin_prox(f, df, g, prox_g, x0, lambd=1., backtrack=True, nbitermax=1000,
 
 
 def fmin_proj(f, df, proj, x0, nbitermax=1000, stopvarx=1e-9, stopvarj=1e-9,
-        t0=1., verbose=False, bbrule=True, log=False, **kwargs):
+              t0=1., verbose=False, bbrule=True, log=False, **kwargs):
     """
     Solve the optimization problem:
 
@@ -158,7 +161,8 @@ def fmin_proj(f, df, proj, x0, nbitermax=1000, stopvarx=1e-9, stopvarj=1e-9,
             - backtrack : peform backtrack if true
             - bbrule : update step with bb rule
             - nbitermax : max number of iteratioin in algorithm
-            - stopvarx : stopping criterion for relative variation of the norm of x
+            - stopvarx : stopping criterion for relative variation of the
+                norm of x
             - stopvarj : stopping criterion for relative variation of the cost
             - t0 : initial descent step
             - verbose : prinrt optimization information

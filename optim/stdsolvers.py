@@ -47,18 +47,8 @@ def lp_init_mat(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None):
     return c, A, b, Aeq, beq, lb, ub
 
 
-def lp_solve(
-    c,
-    A=None,
-    b=None,
-    Aeq=None,
-    beq=None,
-    lb=None,
-    ub=None,
-    solver='scipy',
-    verbose=False,
-    log=False,
-        **kwargs):
+def lp_solve(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
+             solver='scipy', verbose=False, log=False, **kwargs):
     """ Solve a standard linear program with linear constraints
 
     Solve the following optimization problem:
@@ -146,18 +136,17 @@ def lp_solve(
     return res
 
 
-def lp_solve_scipy(
-    c,
-    A=None,
-    b=None,
-    Aeq=None,
-    beq=None,
-    lb=None,
-    ub=None,
-    verbose=False,
-    log=False,
-    method='interior-point',
-        **kwargs):
+def lp_solve_scipy(c,
+                   A=None,
+                   b=None,
+                   Aeq=None,
+                   beq=None,
+                   lb=None,
+                   ub=None,
+                   verbose=False,
+                   log=False,
+                   method='interior-point',
+                   **kwargs):
 
     n = c.shape[0]
 
