@@ -27,29 +27,30 @@ def toq():
     return t - __time_tic_toc
 
 
-def bench_fun_val(fun,n,nbloop,gen,verbose='True'):
-    
-    res={}
-    
-    time_tot=np.zeros((nbloop,n))
-    val_tot=np.zeros((nbloop,n))
-    
+def bench_fun_val(fun, n, nbloop, gen, verbose='True'):
+
+    res = {}
+
+    time_tot = np.zeros((nbloop, n))
+    val_tot = np.zeros((nbloop, n))
+
     for i in range(nbloop):
-        if verbose : print('Loop {}'.format(i))
+        if verbose:
+            print('Loop {}'.format(i))
         for j in range(n):
-            params, kwparams = gen(i,j)
-            
+            params, kwparams = gen(i, j)
+
             tic()
-            x,val_tot[i,j]= fun(*params,**kwparams)
-            time_tot[i,j]=toq()
-            
-            if verbose : print('{:1.3f} '.format(time_tot[i,j]), end='')
+            x, val_tot[i, j] = fun(*params, **kwparams)
+            time_tot[i, j] = toq()
+
+            if verbose:
+                print('{:1.3f} '.format(time_tot[i, j]), end='')
         print()
-            
-    res={'time_tot':time_tot,
-         'val_tot':val_tot,
-         'val':val_tot.mean(0),
-         'time':time_tot.mean(0)}
-    
+
+    res = {'time_tot': time_tot,
+           'val_tot': val_tot,
+           'val': val_tot.mean(0),
+           'time': time_tot.mean(0)}
+
     return res
-    

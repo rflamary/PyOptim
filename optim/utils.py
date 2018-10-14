@@ -7,64 +7,65 @@
 import numpy as np
 from scipy.optimize.linesearch import scalar_search_armijo
 
+
 def norm(x):
     """l2 norm of vector (Frobenius for matrices)"""
     return np.sqrt(np.sum(np.square(x)))
 
 
-def min_interp_2(f0,fp0,x0,f1,x1):
+def min_interp_2(f0, fp0, x0, f1, x1):
     """
     minimize the second order polynomial with given values
     """
 
-    A=np.array([[x0**2,x0,1],[2*x0,1,0],[x1**2,x1,1]])
-    b=np.array([f0,fp0,f1])
+    A = np.array([[x0**2, x0, 1], [2 * x0, 1, 0], [x1**2, x1, 1]])
+    b = np.array([f0, fp0, f1])
 
     try:
-        temp=np.linalg.solve(A,b)
-        res=-temp[1]/2/temp[0]
+        temp = np.linalg.solve(A, b)
+        res = -temp[1] / 2 / temp[0]
     except np.linalg.LinAlgError:
-        #print "Warning: second order lineserach "
-        res=(x1+x0)/2
-
+        # print "Warning: second order lineserach "
+        res = (x1 + x0) / 2
 
     return res
 
 
+def armijo(x0, dx, f, f0, df0, tau=1, gamma=1e-4, nitermax=100, **kwargs):
 
-def armijo(x0,dx,f,f0,df0,tau=1,gamma=1e-4,nitermax=100,**kwargs):
+    x = x0 + tau * dx
 
-    x = x0 + tau*dx;
+    f_new = f(x, **kwargs)
+    gtd = np.sum(df0 * dx)
 
-    f_new=f(x,**kwargs);
-    gtd=np.sum(df0*dx);
+    it = 0
 
-
-    it=0;
-
-    while f_new>f0+gamma*tau*gtd or it==0:
+    while f_new > f0 + gamma * tau * gtd or it == 0:
 
         #temp = tau;
 
-        tau=min_interp_2(f0,gtd,0,f_new,tau)
-        tau=min(1,max(0,tau));
+        tau = min_interp_2(f0, gtd, 0, f_new, tau)
+        tau = min(1, max(0, tau))
 
 #        f_prev = f_new;
 #        t_prev = temp;
 
-        x = x0 + tau*dx;
+        x = x0 + tau * dx
 
-        f_new = f(x,**kwargs);
+        f_new = f(x, **kwargs)
 
-        it=it+1;
-        if it>nitermax:
+        it = it + 1
+        if it > nitermax:
             break
-    #print it
+    # print it
 
-    return x,tau,f_new
+    return x, tau, f_new
 
 # The corresponding scipy function does not work for matrices
-def line_search_armijo(f,xk,pk,gfk,old_fval=None,args=(),c1=1e-4,alpha0=0.99):
+
+
+def line_search_armijo(f, xk, pk, gfk, old_fval=None,
+                       args=(), c1=1e-4, alpha0=0.99):
     """
     Armijo linesearch function that works with matrices
 
@@ -106,14 +107,15 @@ def line_search_armijo(f,xk,pk,gfk,old_fval=None,args=(),c1=1e-4,alpha0=0.99):
 
     def phi(alpha1):
         fc[0] += 1
-        return f(xk + alpha1*pk, *args)
+        return f(xk + alpha1 * pk, *args)
 
     if old_fval is None:
         phi0 = phi(0.)
     else:
         phi0 = old_fval
 
-    derphi0 = np.sum(pk*gfk) # Quickfix for matrices
-    alpha,phi1 = scalar_search_armijo(phi,phi0,derphi0,c1=c1,alpha0=alpha0)
+    derphi0 = np.sum(pk * gfk)  # Quickfix for matrices
+    alpha, phi1 = scalar_search_armijo(
+        phi, phi0, derphi0, c1=c1, alpha0=alpha0)
 
-    return alpha,fc[0],phi1
+    return alpha, fc[0], phi1
