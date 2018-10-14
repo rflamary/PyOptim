@@ -49,7 +49,7 @@ def lp_init_mat(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None):
 
 def lp_solve(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
              solver='scipy', verbose=False, log=False, **kwargs):
-    """ Solve a standard linear program with linear constraints
+    r""" Solve a standard linear program with linear constraints
 
     Solve the following optimization problem:
 
@@ -115,7 +115,6 @@ def lp_solve(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
     log: dict
         Optional log output
 
-
     """
 
     if solver == 'scipy':
@@ -175,7 +174,9 @@ def lp_solve_scipy(c,
         verbose = kwargs['disp'] or verbose
         del kwargs['disp']
 
-    res = scipy.optimize.linprog(c, A, b, Aeq, beq, method=method, bounds=bounds, options={'disp': verbose, **kwargs})
+    res = scipy.optimize.linprog(c, A, b, Aeq, beq, method=method,
+                                 bounds=bounds,
+                                 options={'disp': verbose, **kwargs})
 
     # check if sucessful
     val = res.fun
@@ -283,8 +284,8 @@ def lp_solve_gurobipy(
                       for i in range(A.shape[0])), "Ax<=b")
 
     if Aeq is not None and beq is not None:
-        m.addConstrs((gurobipy.quicksum((x[j] * Aeq[i, j]
-                                         for j in range(n) if Aeq[i, j])) == beq[i]
+        m.addConstrs((gurobipy.quicksum((x[j] * Aeq[i, j] for j in range(n)
+                                         if Aeq[i, j])) == beq[i]
                       for i in range(Aeq.shape[0])), "Aeq x=beq")
     # add equality as two inequality (stdgrb do not handle that well yet)
 
@@ -347,9 +348,6 @@ def lp_solve_cvxopt(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
 
     res = cvxopt.solvers.lp(c, A2, b2, Aeq, beq, solver=method, **kwargs)
 
-    #res={'x':sol,'fun':val,'success': val is not None}
-    # print(res)
-
     for key in ['x', 'y', 's', 'z']:
         res[key] = np.array(res[key]).ravel()
 
@@ -403,7 +401,8 @@ def lp_solve_cvxopt(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
 #    logtoconsole : int, optional
 #        If 1 the print log in console,
 #    crossover : int, optional
-#        Select crossover strategy for interior point (see gurobi documentation)
+#        Select crossover strategy for interior point (see gurobi
+#    documentation)
 #
 #    Returns
 #    -------

@@ -38,7 +38,7 @@ clean : FORCE
 	$(PYTHON) setup.py clean
 
 pep8 :
-	flake8 examples/ optim/ test/
+	$(PYTHON) -m flake8 examples/ optim/ test/
 
 test : FORCE pep8
 	$(PYTHON) -m pytest -v test/ --cov=optim --cov-report html:cov_html

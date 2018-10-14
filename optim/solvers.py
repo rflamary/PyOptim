@@ -401,7 +401,7 @@ def fmin_proj(f, df, proj, x0, nbitermax=1000, stopvarx=1e-9, stopvarj=1e-9,
 
 def fmin_cond(f, df, solve_c, x0, nbitermax=200,
               stopvarj=1e-9, verbose=False, log=False):
-    """ F minimization with conditional gradient
+    r""" F minimization with conditional gradient
 
         The function solves the following optimization problem:
 
@@ -439,9 +439,6 @@ def fmin_cond(f, df, solve_c, x0, nbitermax=200,
 
     References
     ----------
-
-
-
     """
 
     loop = 1
