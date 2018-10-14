@@ -42,8 +42,6 @@ def armijo(x0, dx, f, f0, df0, tau=1, gamma=1e-4, nitermax=100, **kwargs):
 
     while f_new > f0 + gamma * tau * gtd or it == 0:
 
-        #temp = tau;
-
         tau = min_interp_2(f0, gtd, 0, f_new, tau)
         tau = min(1, max(0, tau))
 

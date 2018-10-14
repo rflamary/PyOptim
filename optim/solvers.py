@@ -11,12 +11,15 @@ from .utils import armijo, norm, line_search_armijo
 
 
 # format string for printing in verbose mode
-prnt_str_name = "|{it:>5}|{loss:>13}|{dloss:>13}|{step:>13}|\n|-----|-------------|-------------|-------------|"
+prnt_str_name = "|{it:>5}|{loss:>13}|{dloss:>13}|{step:>13}|\n" \
+                "|-----|-------------|-------------|-------------|"
 prnt_str_loop = "|{it:5d}|{loss: 10e}|{dloss: 10e}|{step: 10e}|"
 
 
-def fmin_prox(f, df, g, prox_g, x0, lambd=1., backtrack=True, nbitermax=1000, stopvarx=1e-9, stopvarj=1e-9,
-              t0=10., verbose=False, m_back=1, sigma=1e-9, eta=2, nbitermax_back=100, bbrule=True, log=False, **kwargs):
+def fmin_prox(f, df, g, prox_g, x0, lambd=1., backtrack=True, nbitermax=1000,
+              stopvarx=1e-9, stopvarj=1e-9, t0=10., verbose=False, m_back=1,
+              sigma=1e-9, eta=2, nbitermax_back=100, bbrule=True, log=False,
+              **kwargs):
     """
     Solve the optimization problem:
 
@@ -136,8 +139,8 @@ def fmin_prox(f, df, g, prox_g, x0, lambd=1., backtrack=True, nbitermax=1000, st
         return x
 
 
-def fmin_proj(f, df, proj, x0, nbitermax=1000, stopvarx=1e-9,
-              stopvarj=1e-9, t0=1., verbose=False, bbrule=True, log=False, **kwargs):
+def fmin_proj(f, df, proj, x0, nbitermax=1000, stopvarx=1e-9, stopvarj=1e-9,
+        t0=1., verbose=False, bbrule=True, log=False, **kwargs):
     """
     Solve the optimization problem:
 

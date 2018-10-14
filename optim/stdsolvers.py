@@ -47,8 +47,18 @@ def lp_init_mat(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None):
     return c, A, b, Aeq, beq, lb, ub
 
 
-def lp_solve(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None, solver='scipy',
-             verbose=False, log=False, **kwargs):
+def lp_solve(
+    c,
+    A=None,
+    b=None,
+    Aeq=None,
+    beq=None,
+    lb=None,
+    ub=None,
+    solver='scipy',
+    verbose=False,
+    log=False,
+        **kwargs):
     """ Solve a standard linear program with linear constraints
 
     Solve the following optimization problem:
@@ -136,8 +146,18 @@ def lp_solve(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None, solver='sc
     return res
 
 
-def lp_solve_scipy(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
-                   verbose=False, log=False, method='interior-point', **kwargs):
+def lp_solve_scipy(
+    c,
+    A=None,
+    b=None,
+    Aeq=None,
+    beq=None,
+    lb=None,
+    ub=None,
+    verbose=False,
+    log=False,
+    method='interior-point',
+        **kwargs):
 
     n = c.shape[0]
 
@@ -179,8 +199,19 @@ def lp_solve_scipy(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
         return res.x, val
 
 
-def lp_solve_stdgrb(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
-                    verbose=False, log=False, method='default', crossover=-1, **kwargs):
+def lp_solve_stdgrb(
+    c,
+    A=None,
+    b=None,
+    Aeq=None,
+    beq=None,
+    lb=None,
+    ub=None,
+    verbose=False,
+    log=False,
+    method='default',
+    crossover=-1,
+        **kwargs):
 
     if not stdgrb:
         raise ImportError("stdgrb not installed")
@@ -213,8 +244,19 @@ def lp_solve_stdgrb(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
         return sol, val
 
 
-def lp_solve_gurobipy(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
-                      verbose=False, log=False, method='default', crossover=-1, **kwargs):
+def lp_solve_gurobipy(
+    c,
+    A=None,
+    b=None,
+    Aeq=None,
+    beq=None,
+    lb=None,
+    ub=None,
+    verbose=False,
+    log=False,
+    method='default',
+    crossover=-1,
+        **kwargs):
 
     if not gurobipy:
         raise ImportError("gurobipy not installed")
@@ -241,8 +283,10 @@ def lp_solve_gurobipy(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
 
     x = m.addVars(n, lb=lb, ub=ub, name="x")
 
-    m.setObjective(gurobipy.quicksum((c[i] * x[i]
-                                      for i in range(n))), gurobipy.GRB.MINIMIZE)
+    m.setObjective(
+        gurobipy.quicksum(
+            (c[i] * x[i] for i in range(n))),
+        gurobipy.GRB.MINIMIZE)
 
     if A is not None and b is not None:
         m.addConstrs((gurobipy.quicksum((x[j] * A[i, j]
@@ -325,84 +369,84 @@ def lp_solve_cvxopt(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
     else:
         return res['x'], res['primal objective']
 
-
-def qp_solve(Q, c=None, A=None, b=None, lb=None, ub=None,
-             method=-1, logtoconsole=1, crossover=-1):
-    """ Solves a standard quadratic program
-
-    Solve the following optimization problem:
-
-    .. math::
-        \min_x  x^TQx+x^Tc
-
-        s.t.
-
-        lb <= x <= ub
-
-        Ax <= b
-
-
-    Uses the gurobi solver.
-
-    Parameters
-    ----------
-    Q : (d,d) ndarray, float64, optional
-        Quadratic cost matrix matrix
-    c : (d,) ndarray, float64
-        Linear cost vector
-    A : (n,d) ndarray, float64, optional
-        Linear constraint matrix
-    b : (n,) ndarray, float64, optional
-        Linear constraint vector
-    lb : (d) ndarray, float64, optional
-        Lower bound constraint
-    ub : (d) ndarray, float64, optional
-        Upper bound constraint
-    method : int, optional
-        Selected solver from
-        * -1=automatic (default),
-        * 0=primal simplex,
-        * 1=dual simplex,
-        * 2=barrier,
-        * 3=concurrent,
-        * 4=deterministic concurrent,
-        * 5=deterministic concurrent simplex
-    logtoconsole : int, optional
-        If 1 the print log in console,
-    crossover : int, optional
-        Select crossover strategy for interior point (see gurobi documentation)
-
-    Returns
-    -------
-    x: (d,) ndarray
-        Optimal solution x
-    val: float
-        optimal value of the objective (None if optimization error)
-
-
-    """
-
-    n = Q.shape[0]
-
-    if c is None:
-        c = np.zeros((n))
-
-    if A is None or b is None:
-        A = np.zeros((0, n))
-        b = np.zeros(0)
-
-    if lb is None:
-        lb = -np.ones(n) * np.inf
-
-    if ub is None:
-        ub = np.ones(n) * np.inf
-
-    if not A.flags.c_contiguous:
-        A = A.copy(order='C')
-
-    if not Q.flags.c_contiguous:
-        Q = Q.copy(order='C')
-
-    sol, val = qp_solve_0(Q, c, A, b, lb, ub, method, logtoconsole, crossover)
-
-    return sol, val
+#
+# def qp_solve(Q, c=None, A=None, b=None, lb=None, ub=None,
+#             method=-1, logtoconsole=1, crossover=-1):
+#    """ Solves a standard quadratic program
+#
+#    Solve the following optimization problem:
+#
+#    .. math::
+#        \min_x  x^TQx+x^Tc
+#
+#        s.t.
+#
+#        lb <= x <= ub
+#
+#        Ax <= b
+#
+#
+#    Uses the gurobi solver.
+#
+#    Parameters
+#    ----------
+#    Q : (d,d) ndarray, float64, optional
+#        Quadratic cost matrix matrix
+#    c : (d,) ndarray, float64
+#        Linear cost vector
+#    A : (n,d) ndarray, float64, optional
+#        Linear constraint matrix
+#    b : (n,) ndarray, float64, optional
+#        Linear constraint vector
+#    lb : (d) ndarray, float64, optional
+#        Lower bound constraint
+#    ub : (d) ndarray, float64, optional
+#        Upper bound constraint
+#    method : int, optional
+#        Selected solver from
+#        * -1=automatic (default),
+#        * 0=primal simplex,
+#        * 1=dual simplex,
+#        * 2=barrier,
+#        * 3=concurrent,
+#        * 4=deterministic concurrent,
+#        * 5=deterministic concurrent simplex
+#    logtoconsole : int, optional
+#        If 1 the print log in console,
+#    crossover : int, optional
+#        Select crossover strategy for interior point (see gurobi documentation)
+#
+#    Returns
+#    -------
+#    x: (d,) ndarray
+#        Optimal solution x
+#    val: float
+#        optimal value of the objective (None if optimization error)
+#
+#
+#    """
+#
+#    n = Q.shape[0]
+#
+#    if c is None:
+#        c = np.zeros((n))
+#
+#    if A is None or b is None:
+#        A = np.zeros((0, n))
+#        b = np.zeros(0)
+#
+#    if lb is None:
+#        lb = -np.ones(n) * np.inf
+#
+#    if ub is None:
+#        ub = np.ones(n) * np.inf
+#
+#    if not A.flags.c_contiguous:
+#        A = A.copy(order='C')
+#
+#    if not Q.flags.c_contiguous:
+#        Q = Q.copy(order='C')
+#
+#    sol, val = qp_solve_0(Q, c, A, b, lb, ub, method, logtoconsole, crossover)
+#
+#    return sol, val

@@ -17,7 +17,7 @@ from . import bench
 __version__ = "0.1.0"
 
 from .solvers import fmin_prox, fmin_proj, fmin_cond
-
+from .stdsolvers import lp_solve
 
 __all__ = ["utils", "solvers", 'stdsolvers', "loss", "prox", 'proj',
-           "fmin_prox", "fmin_proj", "fmin_cond", 'bench']
+           "fmin_prox", "fmin_proj", "fmin_cond", 'bench', "lp_solve"]
