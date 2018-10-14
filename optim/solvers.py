@@ -270,7 +270,7 @@ def fmin_proj(f, df, proj, x0, nbitermax=1000, stopvarx=1e-9, stopvarj=1e-9,
 
     References
     ----------
-    .. [3] Birgin, E. G., Martínez, J. M., & Raydan, M. (2000). Nonmonotone
+    .. [3] Birgin, E. G., Martinez, J. M., & Raydan, M. (2000). Nonmonotone
         spectral projected gradient methods on convex sets. SIAM Journal
         on Optimization, 10(4), 1196-1211.
 

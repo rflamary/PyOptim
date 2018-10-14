@@ -176,7 +176,7 @@ def lp_solve_scipy(c,
 
     res = scipy.optimize.linprog(c, A, b, Aeq, beq, method=method,
                                  bounds=bounds,
-                                 options={'disp': verbose, **kwargs})
+                                 options={'disp': verbose}.update(kwargs))
 
     # check if sucessful
     val = res.fun
