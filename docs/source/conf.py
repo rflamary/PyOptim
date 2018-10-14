@@ -17,8 +17,24 @@ import os
 import re
 #try:
 
-#except ImportError:
-#    from mock import MagicMock
+
+# !!!! allow readthedoc compilation
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import Mock as MagicMock
+    ## check whether in the source directory...
+#
+
+
+#!!! This should be commented when executing sphinx-gallery
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+        return MagicMock()
+MOCK_MODULES = ['cvxopt','scipy.optimize']
+# 'autograd.numpy','pymanopt.manifolds','pymanopt.solvers',
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 sys.path.insert(0, os.path.abspath("../.."))
 #sys.setrecursionlimit(1500)
