@@ -1,6 +1,6 @@
 
-
-PYTHON=python
+PYTHON=python3
+branch := $(shell git symbolic-ref --short -q HEAD)
 
 help :
 	@echo "The following make targets are available:"
@@ -14,6 +14,9 @@ help :
 	@echo "    notebook - launch ipython notebook"
 build :
 	$(PYTHON) setup.py build
+
+buildext :
+	$(PYTHON) setup.py build_ext --inplace
 
 install :
 	$(PYTHON) setup.py install --user
@@ -31,19 +34,43 @@ sremove :
 	tr '\n' '\0' < files.txt | sudo xargs -0 rm -f --
 	rm files.txt
 
-clean :
+clean : FORCE
 	$(PYTHON) setup.py clean
+
+pep8 :
+	flake8 examples/ optim/ test/
+
+test : FORCE pep8
+	$(PYTHON) -m pytest -v test/ --cov=optim --cov-report html:cov_html
 	
-test:
-	pytest
+pytest : FORCE 
+	$(PYTHON) -m pytest -v test/ --cov=optim
 
-uploadpypi:
+uploadpypi :
 	#python setup.py register
-	python setup.py sdist upload -r pypi
+	$(PYTHON) setup.py sdist upload -r pypi
 
-rdoc:
+rdoc :
 	pandoc --from=markdown --to=rst --output=docs/source/readme.rst README.md
 
 
 notebook :
-	ipython notebook --matplotlib=inline  --notebook-dir=examples/
+	ipython notebook --matplotlib=inline  --notebook-dir=notebooks/
+	
+bench : 
+	@git stash  >/dev/null 2>&1
+	@echo 'Branch master'
+	@git checkout master >/dev/null 2>&1
+	python3 $(script)
+	@echo 'Branch $(branch)'
+	@git checkout $(branch) >/dev/null 2>&1
+	python3 $(script)
+	@git stash apply >/dev/null 2>&1
+	
+autopep8 :
+	autopep8 -ir test optim examples --jobs -1
+
+aautopep8 :
+	autopep8 -air test optim examples --jobs -1
+
+FORCE :
