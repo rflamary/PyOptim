@@ -20,7 +20,8 @@ def fmin_prox(f, df, g, prox_g, x0, lambd=1., backtrack=True, nbitermax=1000,
               stopvarx=1e-9, stopvarj=1e-9, t0=10., verbose=False, m_back=1,
               sigma=1e-9, eta=2, nbitermax_back=100, bbrule=True, log=False,
               **kwargs):
-    """
+    """ Minimize a sum of smooth and nonsmooth function using proximal splitting
+
     Solve the optimization problem:
 
         min_x f(x)+g(x)

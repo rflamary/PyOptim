@@ -23,17 +23,15 @@ ROOT = os.path.abspath(os.path.dirname(__file__))
 
 
 # convert markdown readme to rst in pypandoc installed
-try:
-   import pypandoc
-   README = pypandoc.convert('README.md', 'rst')
-except (IOError, ImportError):
-   README = open(os.path.join(ROOT, 'README.md')).read()
+with open(os.path.join(ROOT, 'README.md'), encoding="utf-8") as f:
+    README = f.read()
 
 
 setup(name='PyOptim',
       version=__version__,
       description='Python numerical optimization library',
       long_description=README,
+      long_description_content_type='text/markdown', 
       author=u'Remi Flamary',
       author_email='remi.flamary@gmail.com',
       url='https://github.com/rflamary/PyOptim',
