@@ -7,9 +7,6 @@ Created on Thu Nov 10 13:28:34 2016
 
 
 import numpy as np
-import scipy as sp
-import pylab as pl
-
 import optim
 
 n = 100000

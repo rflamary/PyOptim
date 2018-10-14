@@ -7,7 +7,7 @@
 
 import numpy as np
 
-from .utils import armijo, min_interp_2, norm, line_search_armijo
+from .utils import armijo, norm, line_search_armijo
 
 
 # format string for printing in verbose mode
