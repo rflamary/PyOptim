@@ -366,7 +366,7 @@ def lp_solve_cvxopt(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
 
 def qp_solve(Q, c=None, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
              solver='cvxopt', verbose=False, log=False, **kwargs):
-    """ Solves a standard quadratic program
+    r""" Solves a standard quadratic program
 
     Solve the following optimization problem:
 
