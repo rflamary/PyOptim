@@ -390,7 +390,7 @@ def qp_solve(Q, c=None, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
         - 'cvxopt'
             cvxopt interior point solver ('default')
         - 'quadprog'
-            gurobi solver with official python interface
+            quadprog solver (needs to be installed)
 
 
     Parameters
