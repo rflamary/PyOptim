@@ -1,6 +1,8 @@
 PyOptim Python numerical optimization toolbox
 =============================================
 
+|Build Status| |Documentation Status|
+
 This toolob aim at providing a unified interface to generic optimizers
 for standard (LP,QP) and gradient based optimization problems (LBFGS,
 Proximal Splitting, Projected gradient).
@@ -8,7 +10,8 @@ Proximal Splitting, Projected gradient).
 As of now it provides the following solvers:
 
 -  Linear Program (LP) solver using scipy, cvxopt, or GUROBI solver.
--  Proximal spliting (a.k.a. ISTA) gradientd escnt for non smooth
+-  Quadratic Program (QP) solvers using cvxopt aor quadprog.
+-  Proximal spliting (a.k.a. ISTA) gradient descent for non smooth
    optimization.
 -  Spectral Projected Gradient solvers (spectral is optionnal but
    strongly recommended).
@@ -18,7 +21,6 @@ Planned integration are:
 
 -  L-BFGS for smooth optimization (interface to scipy and others)
 -  Stochastic gradients
--  Quadratic Program (QP) solvers
 
 Installation
 ------------
@@ -52,3 +54,8 @@ The main contributors of this module are:
 
 -  `Rémi Flamary <http://remi.flamary.com/>`__
 -  `Stéphane Canu <http://asi.insa-rouen.fr/enseignants/~scanu/>`__
+
+.. |Build Status| image:: https://travis-ci.org/rflamary/PyOptim.svg?branch=master
+   :target: https://travis-ci.org/rflamary/PyOptim
+.. |Documentation Status| image:: https://readthedocs.org/projects/pyoptim/badge/?version=latest
+   :target: https://pyoptim.readthedocs.io/en/latest/?badge=latest
