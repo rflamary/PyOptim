@@ -223,6 +223,8 @@ def lp_solve_stdgrb(
 
     if method in method_to_int:
         method = method_to_int[method]
+        
+
 
     # add equality as two inequality (stdgrb do not handle that well yet)
     A2 = np.concatenate((A, Aeq, -Aeq), 0)
@@ -272,8 +274,8 @@ def lp_solve_gurobipy(
     m = gurobipy.Model("LP")
 
     # set paparemters
-    m.Params.Method = method
     m.Params.LogToConsole = verbose
+    m.Params.Method = method
     m.Params.Crossover = crossover
 
     x = m.addVars(n, lb=lb, ub=ub, name="x")
