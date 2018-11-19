@@ -21,7 +21,7 @@ except ImportError:
 try:
     import quadprog
 except ImportError:
-    gurobipy = False
+    quadprog = False
 
 
 def lp_init_mat(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None):

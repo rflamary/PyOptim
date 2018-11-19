@@ -90,12 +90,20 @@ def test_lp_solve():
 def test_lp_gurobipy():
 
     l1 = valid_solver_const(optim.lp_solve)
+    l2 = valid_solver_const(optim.lp_solve, solver='stdgrb', method='default')
 
     for i in range(-1, 6):
         l2 = valid_solver_const(optim.lp_solve, solver='gurobipy', method=i)
 
         for ((temp, val1), (temp2, val2)) in zip(l1, l2):
             np.testing.assert_allclose(val1, val2, atol=1e-7)
+
+    with pytest.raises(ImportError):
+        optim.stdsolvers.gurobipy = False
+        l2 = valid_solver_const(
+            optim.lp_solve,
+            solver='gurobipy',
+            method='default')
 
 
 def test_lp_cvxopt():
@@ -113,12 +121,20 @@ def test_lp_cvxopt():
 def test_lp_stdgrb():
 
     l1 = valid_solver_const(optim.lp_solve)
+    l2 = valid_solver_const(optim.lp_solve, solver='stdgrb', method='default')
 
     for i in range(-1, 6):
         l2 = valid_solver_const(optim.lp_solve, solver='stdgrb', method=i)
 
         for ((temp, val1), (temp2, val2)) in zip(l1, l2):
             np.testing.assert_allclose(val1, val2, atol=1e-7)
+
+    with pytest.raises(ImportError):
+        optim.stdsolvers.stdgrb = False
+        l2 = valid_solver_const(
+            optim.lp_solve,
+            solver='stdgrb',
+            method='default')
 
 
 if __name__ == "__main__":
