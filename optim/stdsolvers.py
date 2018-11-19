@@ -83,7 +83,7 @@ def lp_solve(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
             available methods 'mosek' or 'glpk'
         - 'gurobipy'
             gurobi solver with official python interface
-        - 'stdgurobi'
+        - 'stdgrb'
             gurobi solver with c interface more efficient for dense problems
 
 
@@ -172,7 +172,7 @@ def lp_solve_scipy(c,
         if isinstance(lb, (int, float, complex)):
             ub = np.ones(n) * ub
 
-        bounds = [(ub[i], lb[i]) for i in range(n)]
+        bounds = [(lb[i], ub[i]) for i in range(n)]
 
     # catch is disp was given to true (scipy interfface compativility)
     if 'disp' in kwargs:
@@ -223,12 +223,13 @@ def lp_solve_stdgrb(
 
     if method in method_to_int:
         method = method_to_int[method]
-        
-
 
     # add equality as two inequality (stdgrb do not handle that well yet)
     A2 = np.concatenate((A, Aeq, -Aeq), 0)
     b2 = np.concatenate((b, beq, -beq))
+
+    lb = lb.astype(np.float64)
+    ub = ub.astype(np.float64)
 
     sol, val = stdgrb.lp_solve(c, A2, b2, lb=lb, ub=ub, method=method,
                                logtoconsole=verbose, crossover=crossover)
@@ -291,6 +292,8 @@ def lp_solve_gurobipy(
                       for i in range(A.shape[0])), "Ax<=b")
 
     if Aeq is not None and beq is not None:
+        if len(beq.shape) == 0:
+            beq = beq.reshape((1,))
         m.addConstrs((gurobipy.quicksum((x[j] * Aeq[i, j] for j in range(n)
                                          if Aeq[i, j])) == beq[i]
                       for i in range(Aeq.shape[0])), "Aeq x=beq")
@@ -341,17 +344,16 @@ def lp_solve_cvxopt(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
     b2 = mat(b2)
 
     Aeq = mat(Aeq) if Aeq is not None else None
-    beq = mat(beq) if beq is not None else None
+    beq = mat(beq.reshape((-1, 1))) if beq is not None else None
 
     if method == 'default':
         method = None
 
-    # add equality as two inequality (stdgrb do not handle that well yet)
-    if Aeq is not None and beq is not None:
-        A2 = np.concatenate((A, Aeq, -Aeq), 0)
-        b2 = np.concatenate((b, beq, -beq))
-
     cvxopt.solvers.options['show_progress'] = verbose
+
+    print(beq)
+    if beq is not None:
+        print(beq.size)
 
     res = cvxopt.solvers.lp(c, A2, b2, Aeq, beq, solver=method, **kwargs)
 
