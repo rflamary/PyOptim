@@ -351,10 +351,6 @@ def lp_solve_cvxopt(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
 
     cvxopt.solvers.options['show_progress'] = verbose
 
-    print(beq)
-    if beq is not None:
-        print(beq.size)
-
     res = cvxopt.solvers.lp(c, A2, b2, Aeq, beq, solver=method, **kwargs)
 
     for key in ['x', 'y', 's', 'z']:
