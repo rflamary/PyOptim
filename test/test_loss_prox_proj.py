@@ -58,7 +58,30 @@ def test_proj():
     np.testing.assert_almost_equal(3, (w0 > 0).sum())
 
 
+def test_prox():
+
+    d = 10
+    np.random.seed(0)
+    w = np.random.randn(d)
+
+    optim.prox.reg_l1(w)
+    w0 = optim.prox.prox_l1(w)
+    w1 = optim.prox.prox_l1(w, 10)
+
+    np.testing.assert_array_less((w1 > 0).sum(), (w0 > 0).sum())
+    np.testing.assert_array_less(optim.prox.reg_l1(w1),
+                                 optim.prox.reg_l1(w0),)
+
+    optim.prox.reg_l2(w)
+    w0 = optim.prox.prox_l2(w)
+    w1 = optim.prox.prox_l2(w, 10)
+
+    np.testing.assert_array_less(optim.prox.reg_l2(w1),
+                                 optim.prox.reg_l2(w0),)
+
+
 if __name__ == "__main__":
     test_loss()
     test_proj()
+    test_prox()
     pass
