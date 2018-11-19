@@ -23,6 +23,7 @@ before_script: # configure a headless display to test plot generation
   - sleep 3 # give xvfb some time to start
 # command to install dependencies
 install:
+  - sudo apt install libblas-dev liblapack-dev
   - pip install flake8 pytest pytest-cov
   - pip install .
 # command to run tests + check syntax style
