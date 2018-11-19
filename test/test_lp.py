@@ -84,7 +84,9 @@ def test_lp_solve():
     for ((temp, val1), (temp2, val2)) in zip(l1, l2):
         np.testing.assert_allclose(val1, val2, atol=1e-7)
 
-@pytest.mark.skipif(not optim.stdsolvers.gurobipy, reason="gurobipy not installed")
+
+@pytest.mark.skipif(not optim.stdsolvers.gurobipy,
+                    reason="gurobipy not installed")
 def test_lp_gurobipy():
 
     l1 = valid_solver_const(optim.lp_solve)
@@ -106,6 +108,7 @@ def test_lp_cvxopt():
         for ((temp, val1), (temp2, val2)) in zip(l1, l2):
             np.testing.assert_allclose(val1, val2, atol=1e-7)
 
+
 @pytest.mark.skipif(not optim.stdsolvers.stdgrb, reason="stdgrb not installed")
 def test_lp_stdgrb():
 
@@ -120,11 +123,11 @@ def test_lp_stdgrb():
 
 if __name__ == "__main__":
     # execute only if run as a script
-    import traceback
-    import sys
-    import code
+    #    import traceback
+    #    import sys
+    #    import code
 
-#    try:
+    #    try:
 
     test_lp_solve()
     test_lp_gurobipy()
@@ -133,7 +136,8 @@ if __name__ == "__main__":
 #    except:
 #        type, value, tb = sys.exc_info()
 #        traceback.print_exc()
-#        last_frame = lambda tb=tb: last_frame(tb.tb_next) if tb.tb_next else tb
+#        last_frame = lambda tb=tb: last_frame(tb.tb_next)
+#  if tb.tb_next else tb
 #        frame = last_frame().tb_frame
 #        ns = dict(frame.f_globals)
 #        ns.update(frame.f_locals)
