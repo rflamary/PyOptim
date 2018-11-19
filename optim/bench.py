@@ -9,6 +9,8 @@ from __future__ import print_function
 import numpy as np
 import time
 
+__time_tic_toc = time.time()
+
 
 def tic():
     """ Python implementation of Matlab tic() function """
@@ -30,6 +32,7 @@ def toq():
 
 
 def bench_fun_val(fun, n, nbloop, gen, verbose='True'):
+    """ optimization bench function """
 
     res = {}
 

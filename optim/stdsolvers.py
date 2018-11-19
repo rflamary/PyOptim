@@ -531,11 +531,6 @@ def qp_solve_cvxopt(Q, c=None, A=None, b=None, Aeq=None, beq=None, lb=None,
     if method == 'default':
         method = None
 
-    # add equality as two inequality (stdgrb do not handle that well yet)
-    if Aeq is not None and beq is not None:
-        A2 = np.concatenate((A, Aeq, -Aeq), 0)
-        b2 = np.concatenate((b, beq, -beq))
-
     cvxopt.solvers.options['show_progress'] = verbose
 
     res = cvxopt.solvers.qp(Q, c, A2, b2, Aeq, beq, solver=method, **kwargs)
@@ -627,15 +622,15 @@ def qp_solve_quadprog(Q, c=None, A=None, b=None, Aeq=None, beq=None, lb=None,
 
     neq = Aeq2.shape[0]
 
-    log = {}
+    log2 = {}
 
     Atot = np.concatenate((Aeq2, A2), 0)
     btot = np.concatenate((beq2, b2))
 
-    x, val, log['xu'], log['iterations'], log['lagrangian'], log['iact'] = \
-        quadprog.solve_qp(Q, -c, -Atot.T, -btot, neq)
+    x, val, log2['xu'], log2['iterations'], log2['lagrangian'], \
+        log2['iact'] = quadprog.solve_qp(Q, -c, -Atot.T, -btot, neq)
 
     if log:
-        return x, val, log
+        return x, val, log2
     else:
         return x, val

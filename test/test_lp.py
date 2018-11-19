@@ -66,7 +66,7 @@ def valid_solver_const(f, **kwargs):
     #
 
     # LP  eq + box
-    x, val = f(c, Aeq=Aeq, beq=beq, lb=lb, ub=ub, **kwargs)
+    x, val, log = f(c, Aeq=Aeq, beq=beq, lb=lb, ub=ub, log=True, **kwargs)
 
     np.testing.assert_allclose(Aeq.dot(x) - thr, beq)  # equality constraints
     np.testing.assert_array_less(x - thr, ub)  # box constraint 1
