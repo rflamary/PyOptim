@@ -24,7 +24,7 @@ before_script: # configure a headless display to test plot generation
 # command to install dependencies
 install:
   - sudo apt update
-  - sudo apt install libblas-dev liblapack-dev
+  - sudo apt install libblas-dev liblapack-dev libumfpack5
   - pip install flake8 pytest pytest-cov
   - pip install .
 # command to run tests + check syntax style
