@@ -140,16 +140,8 @@ def lp_solve(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
     return res
 
 
-def lp_solve_scipy(c,
-                   A=None,
-                   b=None,
-                   Aeq=None,
-                   beq=None,
-                   lb=None,
-                   ub=None,
-                   verbose=False,
-                   log=False,
-                   method='interior-point',
+def lp_solve_scipy(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
+                   verbose=False, log=False, method='interior-point',
                    **kwargs):
 
     n = c.shape[0]
@@ -194,19 +186,8 @@ def lp_solve_scipy(c,
         return res.x, val
 
 
-def lp_solve_stdgrb(
-    c,
-    A=None,
-    b=None,
-    Aeq=None,
-    beq=None,
-    lb=None,
-    ub=None,
-    verbose=False,
-    log=False,
-    method='default',
-    crossover=-1,
-        **kwargs):
+def lp_solve_stdgrb(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
+                    verbose=False, log=False, method='default', crossover=-1, **kwargs):
 
     if not stdgrb:
         raise ImportError("stdgrb not installed")
@@ -242,19 +223,9 @@ def lp_solve_stdgrb(
         return sol, val
 
 
-def lp_solve_gurobipy(
-    c,
-    A=None,
-    b=None,
-    Aeq=None,
-    beq=None,
-    lb=None,
-    ub=None,
-    verbose=False,
-    log=False,
-    method='default',
-    crossover=-1,
-        **kwargs):
+def lp_solve_gurobipy(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
+                      verbose=False, log=False, method='default',
+                      crossover=-1, **kwargs):
 
     if not gurobipy:
         raise ImportError("gurobipy not installed")
@@ -506,7 +477,10 @@ def qp_solve_cvxopt(Q, c=None, A=None, b=None, Aeq=None, beq=None, lb=None,
 
     """
 
-    n = c.shape[0]
+    n = Q.shape[0]
+
+    if c is None:
+        c = np.zeros(n)
 
     c, A, b, Aeq2, beq2, lb2, ub2 = lp_init_mat(c, A, b, Aeq, beq, lb, ub)
 
@@ -610,7 +584,10 @@ def qp_solve_quadprog(Q, c=None, A=None, b=None, Aeq=None, beq=None, lb=None,
     if not quadprog:
         raise ImportError("quadprog not installed")
 
-    n = c.shape[0]
+    n = Q.shape[0]
+
+    if c is None:
+        c = np.zeros(n)
 
     c, A, b, Aeq2, beq2, lb2, ub2 = lp_init_mat(c, A, b, Aeq, beq, lb, ub)
 
@@ -639,19 +616,9 @@ def qp_solve_quadprog(Q, c=None, A=None, b=None, Aeq=None, beq=None, lb=None,
         return x, val
 
 
-def qp_solve_gurobipy(Q,
-                      c,
-                      A=None,
-                      b=None,
-                      Aeq=None,
-                      beq=None,
-                      lb=None,
-                      ub=None,
-                      verbose=False,
-                      log=False,
-                      method='default',
-                      crossover=-1,
-                      **kwargs):
+def qp_solve_gurobipy(Q, c=None, A=None, b=None, Aeq=None, beq=None, lb=None,
+                      ub=None, verbose=False, log=False, method='default',
+                      crossover=-1, **kwargs):
 
     if not gurobipy:
         raise ImportError("gurobipy not installed")
@@ -675,7 +642,10 @@ def qp_solve_gurobipy(Q,
 
     x = m.addVars(n, lb=lb, ub=ub, name="x")
 
-    linterm = gurobipy.quicksum((c[i] * x[i] for i in range(n)))
+    if c is not None:
+        linterm = gurobipy.quicksum((c[i] * x[i] for i in range(n)))
+    else:
+        linterm = 0
     quadterm = gurobipy.quicksum((Q[i, j] * x[i] * x[j] for i in range(n)
                                   for j in range(n)))
 
