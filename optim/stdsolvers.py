@@ -187,7 +187,8 @@ def lp_solve_scipy(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
 
 
 def lp_solve_stdgrb(c, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
-                    verbose=False, log=False, method='default', crossover=-1, **kwargs):
+                    verbose=False, log=False, method='default', crossover=-1,
+                    **kwargs):
 
     if not stdgrb:
         raise ImportError("stdgrb not installed")
