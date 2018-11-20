@@ -83,30 +83,6 @@ def test_qp_solve():
     valid_solver_const(optim.qp_solve)
 
 
-# @pytest.mark.skipif(not optim.stdsolvers.gurobipy,
-#                    reason="gurobipy not installed")
-# def test_lp_gurobipy():
-#
-#    l1 = valid_solver_const(optim.lp_solve)
-#
-#    for i in range(-1, 6):
-#        l2 = valid_solver_const(optim.lp_solve, solver='gurobipy', method=i)
-#
-#        for ((temp, val1), (temp2, val2)) in zip(l1, l2):
-#            np.testing.assert_allclose(val1, val2, atol=1e-7)
-#
-#
-# def test_lp_cvxopt():
-#
-#    l1 = valid_solver_const(optim.lp_solve)
-#
-#    for m in ['default', 'glpk']:
-#        l2 = valid_solver_const(optim.lp_solve, solver='cvxopt', method=m)
-#
-#        for ((temp, val1), (temp2, val2)) in zip(l1, l2):
-#            np.testing.assert_allclose(val1, val2, atol=1e-7)
-
-
 @pytest.mark.skipif(not optim.stdsolvers.quadprog,
                     reason="quadprog not installed")
 def test_qp_quadprog():
@@ -118,8 +94,26 @@ def test_qp_quadprog():
         np.testing.assert_allclose(val1, val2, atol=1e-7)
 
 
+@pytest.mark.skipif(not optim.stdsolvers.gurobipy,
+                    reason="gurobipy not installed")
+def test_qp_gurobipy():
+
+    l1 = valid_solver_const(optim.qp_solve)
+    l2 = valid_solver_const(optim.qp_solve, solver='gurobipy')
+
+    for ((temp, val1), (temp2, val2)) in zip(l1, l2):
+        np.testing.assert_allclose(val1, val2, atol=1e-7)
+
+    for i in range(-1, 3):
+        l2 = valid_solver_const(optim.qp_solve, solver='gurobipy', method=i)
+
+        for ((temp, val1), (temp2, val2)) in zip(l1, l2):
+            np.testing.assert_allclose(val1, val2, atol=1e-7)
+
+
 if __name__ == "__main__":
 
     test_qp_solve()
     test_qp_quadprog()
+    test_qp_gurobipy()
 #

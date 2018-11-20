@@ -10,7 +10,7 @@ Proximal Splitting, Projected gradient).
 As of now it provides the following solvers:
 
 * Linear Program (LP) solver using scipy, cvxopt, or GUROBI solver.
-* Quadratic Program (QP) solvers using cvxopt aor quadprog.
+* Quadratic Program (QP) solvers using cvxopt, guroby or quadprog.
 * Proximal spliting (a.k.a. ISTA) gradient descent for non smooth optimization.
 * Spectral Projected Gradient solvers (spectral is optionnal but strongly recommended).
 * Conditional gradient solver.

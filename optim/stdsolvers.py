@@ -437,6 +437,9 @@ def qp_solve(Q, c=None, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None,
     elif solver == 'quadprog':
         res = qp_solve_quadprog(Q, c, A, b, Aeq, beq, lb, ub,
                                 verbose=verbose, log=log, **kwargs)
+    elif solver == 'gurobipy':
+        res = qp_solve_gurobipy(Q, c, A, b, Aeq, beq, lb, ub,
+                                verbose=verbose, log=log, **kwargs)
     else:
         raise NotImplementedError('Solver {} not implemented'.format(solver))
 
@@ -634,3 +637,78 @@ def qp_solve_quadprog(Q, c=None, A=None, b=None, Aeq=None, beq=None, lb=None,
         return x, val, log2
     else:
         return x, val
+
+
+def qp_solve_gurobipy(Q,
+                      c,
+                      A=None,
+                      b=None,
+                      Aeq=None,
+                      beq=None,
+                      lb=None,
+                      ub=None,
+                      verbose=False,
+                      log=False,
+                      method='default',
+                      crossover=-1,
+                      **kwargs):
+
+    if not gurobipy:
+        raise ImportError("gurobipy not installed")
+
+    n = c.shape[0]
+
+    method_to_int = {'default': -1,
+                     'primal-simplex': 0,
+                     'dual-simplex': 1,
+                     'barrier': 2}
+
+    if method in method_to_int:
+        method = method_to_int[method]
+
+    m = gurobipy.Model("QP")
+
+    # set paparemters
+    m.Params.LogToConsole = verbose
+    m.Params.Method = method
+    m.Params.Crossover = crossover
+
+    x = m.addVars(n, lb=lb, ub=ub, name="x")
+
+    linterm = gurobipy.quicksum((c[i] * x[i] for i in range(n)))
+    quadterm = gurobipy.quicksum((Q[i, j] * x[i] * x[j] for i in range(n)
+                                  for j in range(n)))
+
+    m.setObjective(linterm + quadterm / 2, gurobipy.GRB.MINIMIZE)
+
+    if A is not None and b is not None:
+        m.addConstrs((gurobipy.quicksum((x[j] * A[i, j]
+                                         for j in range(n) if A[i, j])) <= b[i]
+                      for i in range(A.shape[0])), "Ax<=b")
+
+    if Aeq is not None and beq is not None:
+        if len(beq.shape) == 0:
+            beq = beq.reshape((1,))
+        m.addConstrs((gurobipy.quicksum((x[j] * Aeq[i, j] for j in range(n)
+                                         if Aeq[i, j])) == beq[i]
+                      for i in range(Aeq.shape[0])), "Aeq x=beq")
+    # add equality as two inequality (stdgrb do not handle that well yet)
+
+    # m.update()
+    try:
+
+        m.optimize()
+
+        sol = np.zeros_like(c)
+        for i in range(n):
+            sol[i] = m.getVars()[i].x
+        val = m.getObjective().getValue()
+        res = {'x': sol, 'fun': val, 'success': val is not None}
+
+    except gurobipy.GurobiError as e:
+        print('Error code ' + str(e.errno) + ": " + str(e))
+
+    if log:
+        return sol, val, res
+    else:
+        return sol, val
